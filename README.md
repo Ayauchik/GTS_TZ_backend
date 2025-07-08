@@ -11,7 +11,7 @@ This is the complete Node.js, Express, and MongoDB backend for the GTS_TZ Conten
     -   Authors can create, edit, delete, and submit articles.
     -   Moderators can review, approve, or reject articles.
     -   Published articles are available to all authenticated users.
--   **Admin Panel Functionality:** Admins can create and manage users of any role.
+-   **Admin Panel Functionality:** Admins can create and see all users of any role.
 
 ## Tech Stack & Architecture
 
@@ -104,6 +104,7 @@ The server will be running at `http://localhost:5000` (or the port you specified
 ## API Documentation
 
 All endpoints are prefixed with `/api/v1`. Authentication is required for most endpoints and is provided via the `x-access-token` HTTP header.
+Deployed by Sevalla.
 
 ### User Endpoints (`/user`)
 
