@@ -1,6 +1,6 @@
 const express = require('express');
 const routes = express.Router();
-const {createNewUser, authenticateUser} = require('./controller');
+const { createNewUser, authenticateUser, getAllUsers } = require('./controller');
 const checkRole = require('../../middleware/checkRole');
 const auth = require('../../middleware/auth'); // Assuming you have an auth middleware for token verification
 
@@ -60,6 +60,16 @@ routes.post("/create", auth, checkRole(['ADMIN']), async (req, res) => {
 
     } catch (error) {
         res.status(400).json({ message: "Error creating user: " + error.message });
+    }
+});
+
+// Get all users (Admin only)
+routes.get("/all", auth, checkRole(['ADMIN']), async (req, res) => {
+    try {
+        const users = await getAllUsers();
+        res.status(200).json(users);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
     }
 });
 

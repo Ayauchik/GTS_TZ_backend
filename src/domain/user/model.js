@@ -6,7 +6,10 @@ const UserSchema = new Schema({
     login: {type: String, required: true, unique: true, trim: true, minlength: 3, maxlength: 20},
     role: {type: String, enum: ["ADMIN", "AUTHOR", "MODERATOR"], default: "AUTHOR"},
     password: {type: String, required: true, trim: true, minlength: 6},
-    token: String
+    token: String,
+
+    loginAttempts: { type: Number, required: true, default: 0 },
+    lockUntil: { type: Date }
 });
 
 const User = mongoose.model("User", UserSchema);

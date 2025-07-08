@@ -30,12 +30,78 @@ routes.post('/', auth, checkRole(['AUTHOR']), async (req, res) => {
     }
 });
 
+// --- MODERATOR-SPECIFIC ROUTES ---
+routes.get('/moderation-queue', auth, checkRole(['MODERATOR']), async (req, res) => {
+    try {
+        const articles = await controller.getModerationQueue();
+        res.status(200).json(articles);
+    } catch (error)
+        {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+
 routes.get('/my-articles', auth, checkRole(['AUTHOR']), async (req, res) => {
     try {
         const authorId = req.currentUser.userId;
         const articles = await controller.getMyArticles(authorId);
         res.status(200).json(articles);
     } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+
+
+
+routes.patch('/:id/edit', auth, checkRole(['AUTHOR']), async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { title, content } = req.body;
+        const authorId = req.currentUser.userId;
+
+        // Ensure at least one field is being updated
+        if (!title && !content) {
+            return res.status(400).json({ message: "Either title or content must be provided to update." });
+        }
+
+        const updatedArticle = await controller.updateArticle(id, authorId, { title, content });
+        res.status(200).json({ message: "Article updated successfully.", article: updatedArticle });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+routes.delete('/:id', auth, checkRole(['AUTHOR']), async (req, res) => {
+    try {
+        const { id } = req.params;
+        const authorId = req.currentUser.userId;
+
+        // Call the controller function to perform the deletion logic
+        await controller.deleteArticle(id, authorId);
+
+        // If the controller function completes without error, send a success response.
+        res.status(200).json({ message: "Article deleted successfully." });
+
+    } catch (error) {
+        // The controller will throw an error if not found, not owner, or wrong status.
+        // We catch it here and send a 4xx response to the client.
+        res.status(400).json({ message: error.message });
+    }
+});
+
+// Get a single published article by ID
+routes.get('/:id', auth, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const article = await controller.getPublishedArticleById(id);
+        res.status(200).json(article);
+    } catch (error) {
+        // Return 404 if the article is not found
+        if (error.message.includes("not found")) {
+            return res.status(404).json({ message: error.message });
+        }
         res.status(400).json({ message: error.message });
     }
 });
@@ -51,15 +117,7 @@ routes.patch('/:id/submit', auth, checkRole(['AUTHOR']), async (req, res) => {
     }
 });
 
-// --- MODERATOR-SPECIFIC ROUTES ---
-routes.get('/moderation-queue', auth, checkRole(['MODERATOR']), async (req, res) => {
-    try {
-        const articles = await controller.getModerationQueue();
-        res.status(200).json(articles);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
-});
+
 
 routes.patch('/:id/approve', auth, checkRole(['MODERATOR']), async (req, res) => {
     try {
