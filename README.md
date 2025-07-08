@@ -1,6 +1,7 @@
 # GTS_TZ Backend
 
 This is the complete Node.js, Express, and MongoDB backend for the GTS_TZ Content Management & Moderation Platform. It provides a RESTful API to handle user authentication, role-based access control, and full CRUD (Create, Read, Update, Delete) operations for articles.
+Deployed by Sevalla: (link)[https://gtstzbackend-3bvxr.sevalla.app/]
 
 ## Key Features
 
